@@ -1,4 +1,5 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from app.core.config import settings
@@ -56,6 +57,18 @@ app = FastAPI(
     title=settings.APP_NAME,
     debug=settings.DEBUG,
     lifespan=lifespan
+)
+
+
+# -------------------------------
+# CORS MIDDLEWARE
+# -------------------------------
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Adjust this for production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
