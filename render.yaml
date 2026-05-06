@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: syncommerce-ai-backend
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app
+    envVars:
+      - key: APP_NAME
+        value: SynCommerce AI
+      - key: ENV
+        value: production
+      - key: DEBUG
+        value: "False"
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: 8000
+      - key: MONGO_URI
+        sync: false
+      - key: DATABASE_NAME
+        value: syncommerce_db
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "60"
+      - key: LOG_LEVEL
+        value: INFO
