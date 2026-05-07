@@ -19,13 +19,13 @@ class Settings(BaseSettings):
     # -------------------------------
     # DATABASE
     # -------------------------------
-    MONGO_URI: str = "mongodb://localhost:27017/syncommerce"
-    DATABASE_NAME: str = "syncommerce_db"
+    MONGO_URI: str
+    DATABASE_NAME: str
 
     # -------------------------------
     # SECURITY
     # -------------------------------
-    SECRET_KEY: str = "265a406ec695a030597caee5c5bf5519d10fd384c9095971708d9d61d3f0d83c"
+    SECRET_KEY: str
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
