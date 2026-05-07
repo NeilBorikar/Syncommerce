@@ -36,4 +36,6 @@ def login(email: str, password: str, db=Depends(get_db)):
 
     token = create_access_token({"user_id": user["id"]})
 
-    return {"access_token": token}
+    user_data = {k: v for k, v in user.items() if k != "hashed_password"}
+
+    return {"access_token": token, "user": user_data}
