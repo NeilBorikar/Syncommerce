@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from app.schemas.user_schema import UserCreate
-from app.services.billing_service import BillingService
 from app.repositories.user_repository import UserRepository
 from app.core.security import hash_password, verify_password, create_access_token
 from app.api.deps import get_db
+import uuid
 
 
 router = APIRouter()
@@ -20,7 +20,16 @@ def register(user: UserCreate, db=Depends(get_db)):
     user_data = user.dict()
     user_data["hashed_password"] = hash_password(user_data.pop("password"))
 
-    return repo.create(user_data)
+    # Auto-assign a business_id so the WebSocket can connect immediately
+    # Owners get their own business; workers can be assigned later
+    user_data["business_id"] = str(uuid.uuid4())
+    user_data["is_active"] = True
+
+    created = repo.create(user_data)
+    # Return without hashed_password
+    user_resp = {k: v for k, v in created.items() if k != "hashed_password"}
+    token = create_access_token({"user_id": created["id"]})
+    return {"access_token": token, "user": user_resp}
 
 
 @router.post("/login")

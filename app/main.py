@@ -10,6 +10,7 @@ from app.utils.logger import logger
 # API ROUTES
 # -------------------------------
 from app.api.v1 import auth, users, bills, drafts, inventory, reports
+from app.api.v1.bills import set_sync_engine as set_bills_sync_engine
 
 # -------------------------------
 # REALTIME
@@ -21,6 +22,9 @@ from app.realtime.sync_engine import SyncEngine
 # Initialize realtime components
 manager = ConnectionManager()
 sync_engine = SyncEngine(manager)
+
+# Wire sync_engine into routers that need to broadcast WS events
+set_bills_sync_engine(sync_engine)
 
 
 # -------------------------------
