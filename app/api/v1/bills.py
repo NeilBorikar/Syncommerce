@@ -6,9 +6,9 @@ router = APIRouter()
 
 
 @router.post("/")
-def create_bill(data: dict, db=Depends(get_db)):
+async def create_bill(data: dict, db=Depends(get_db)):
     service = BillingService(db)
-    return service.create_bill(data)
+    return await service.create_bill(data)
 
 
 @router.get("/{business_id}")

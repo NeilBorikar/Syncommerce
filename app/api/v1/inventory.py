@@ -6,9 +6,9 @@ router = APIRouter()
 
 
 @router.post("/")
-def create_item(data: dict, db=Depends(get_db)):
+async def create_item(data: dict, db=Depends(get_db)):
     service = InventoryService(db)
-    return service.create_item(data)
+    return await service.create_item(data)
 
 
 @router.get("/low-stock/{business_id}")
