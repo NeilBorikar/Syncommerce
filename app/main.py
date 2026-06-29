@@ -9,7 +9,7 @@ from app.utils.logger import logger
 # -------------------------------
 # API ROUTES
 # -------------------------------
-from app.api.v1 import auth, users, bills, drafts, inventory, reports
+from app.api.v1 import auth, users, bills, drafts, inventory, reports, customers, employees, branches
 from app.api.v1.bills import set_sync_engine as set_bills_sync_engine
 
 # -------------------------------
@@ -108,6 +108,9 @@ app.include_router(bills.router, prefix="/api/v1/bills", tags=["Bills"])
 app.include_router(drafts.router, prefix="/api/v1/drafts", tags=["Drafts"])
 app.include_router(inventory.router, prefix="/api/v1/inventory", tags=["Inventory"])
 app.include_router(reports.router, prefix="/api/v1/reports", tags=["Reports"])
+app.include_router(customers.router, prefix="/api/v1/customers", tags=["Customers"])
+app.include_router(employees.router, prefix="/api/v1/employees", tags=["Employees"])
+app.include_router(branches.router, prefix="/api/v1/branches", tags=["Branches"])
 
 
 # -------------------------------

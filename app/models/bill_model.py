@@ -11,6 +11,14 @@ class Bill(BaseModelMixin):
         discount: float = 0,
         tax: float = 0,
         status: str = "final",
+        customer_id: str = None,
+        customer_name: str = "",
+        customer_phone: str = "",
+        billing_address: str = "",
+        shipping_address: str = "",
+        gst_total: float = 0,
+        notes: str = "",
+        branch_id: str = None,
     ):
         super().__init__()
 
@@ -21,3 +29,11 @@ class Bill(BaseModelMixin):
         self.discount = discount
         self.tax = tax
         self.status = status
+        self.customer_id = customer_id
+        self.customer_name = customer_name
+        self.customer_phone = customer_phone
+        self.billing_address = billing_address
+        self.shipping_address = shipping_address
+        self.gst_total = gst_total
+        self.notes = notes
+        self.branch_id = branch_id

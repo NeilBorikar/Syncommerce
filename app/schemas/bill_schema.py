@@ -10,6 +10,7 @@ class BillItem(BaseModel):
     name: str = Field(..., min_length=1)
     quantity: int = Field(..., gt=0)
     price: float = Field(..., gt=0)
+    gst_percent: float = Field(default=0, ge=0, le=100)
 
 
 # -------------------------------
@@ -27,6 +28,13 @@ class BillBase(BaseModel):
 class BillCreate(BillBase):
     business_id: str
     created_by: str
+    customer_id: Optional[str] = None
+    customer_name: Optional[str] = ""
+    customer_phone: Optional[str] = ""
+    billing_address: Optional[str] = ""
+    shipping_address: Optional[str] = ""
+    notes: Optional[str] = ""
+    branch_id: Optional[str] = None
 
 
 # -------------------------------
@@ -46,8 +54,15 @@ class BillResponse(BillBase):
     business_id: str
     created_by: str
     total: float
+    gst_total: Optional[float] = 0
     status: str
+    customer_id: Optional[str] = None
+    customer_name: Optional[str] = ""
+    customer_phone: Optional[str] = ""
+    billing_address: Optional[str] = ""
+    shipping_address: Optional[str] = ""
+    notes: Optional[str] = ""
+    branch_id: Optional[str] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
