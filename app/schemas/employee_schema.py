@@ -15,7 +15,7 @@ class EmployeeCreate(BaseModel):
     salary: Optional[float] = Field(default=0.0, ge=0)
     date_joined: Optional[str] = Field(default="")
     branch_id: Optional[str] = None
-    business_id: str
+    business_id: Optional[str] = None
 
 
 # -------------------------------
