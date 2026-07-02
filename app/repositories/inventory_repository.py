@@ -8,7 +8,8 @@ class InventoryRepository(BaseRepository):
         super().__init__(db["inventory"])
 
     def get_by_business(self, business_id: str):
-        return self.get_many({"business_id": business_id})
+        items = self.collection.find({"business_id": business_id})
+        return self._convert_many(list(items))
 
     def get_low_stock(self, business_id: str):
         items = self.collection.find({

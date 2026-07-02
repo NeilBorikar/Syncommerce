@@ -13,17 +13,20 @@ async def generate_report(business_id: str, db=Depends(get_db)):
 
 @router.get("/sales", dependencies=[manager_or_owner])
 def get_sales_report(business_id: str, from_date: str, to_date: str, branch_id: str = None, db=Depends(get_db)):
-    # Simple placeholder logic, assumes report service has this method
-    return {"status": "ok", "business_id": business_id, "from": from_date, "to": to_date}
+    service = ReportService(db)
+    return service.get_sales_report(business_id, from_date, to_date, branch_id)
 
 @router.get("/inventory", dependencies=[manager_or_owner])
 def get_inventory_report(business_id: str, branch_id: str = None, db=Depends(get_db)):
-    return {"status": "ok", "business_id": business_id}
+    service = ReportService(db)
+    return service.get_inventory_report(business_id, branch_id)
 
 @router.get("/employees", dependencies=[manager_or_owner])
 def get_employee_performance(business_id: str, from_date: str, to_date: str, db=Depends(get_db)):
-    return {"status": "ok", "business_id": business_id}
+    service = ReportService(db)
+    return service.get_employee_performance(business_id, from_date, to_date)
 
 @router.get("/gst", dependencies=[owner_only])
 def get_gst_report(business_id: str, month: int, year: int, db=Depends(get_db)):
-    return {"status": "ok", "business_id": business_id}
+    service = ReportService(db)
+    return service.get_gst_report(business_id, month, year)

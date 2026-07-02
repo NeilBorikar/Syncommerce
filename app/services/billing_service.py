@@ -20,7 +20,10 @@ class BillingService:
     def _calculate_gst(self, items):
         gst_total = 0.0
         for item in items:
-            gst_percent = item.get("gst_percent", 0.0)
+            try:
+                gst_percent = float(item.get("gst_percent", 0.0))
+            except (ValueError, TypeError):
+                gst_percent = 0.0
             item_gst = item["price"] * item["quantity"] * (gst_percent / 100)
             gst_total += item_gst
         return gst_total
@@ -43,6 +46,20 @@ class BillingService:
                         data["billing_address"] = cust.get("billing_address", "")
                     if not data.get("shipping_address"):
                         data["shipping_address"] = cust.get("shipping_address", "")
+                else:
+                    # Auto-register new customer
+                    new_cust_data = {
+                        "business_id": business_id,
+                        "phone": customer_phone,
+                        "name": data.get("customer_name") or "Walk-in",
+                        "total_spend": 0,
+                        "bill_count": 0,
+                        "favorite_items": []
+                    }
+                    new_cust = self.customer_service.register_customer(new_cust_data)
+                    if new_cust and new_cust.get("customer"):
+                        customer_id = new_cust["customer"]["id"]
+                        data["customer_id"] = customer_id
 
             # Calculate GST
             gst_total = self._calculate_gst(data["items"])
