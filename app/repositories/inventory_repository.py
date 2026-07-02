@@ -1,5 +1,6 @@
 from pymongo.database import Database
 from app.repositories.base_repository import BaseRepository
+import re
 
 
 class InventoryRepository(BaseRepository):
@@ -15,3 +16,12 @@ class InventoryRepository(BaseRepository):
 
     def update_stock(self, item_id: str, quantity: int):
         return self.update(item_id, {"quantity": quantity})
+
+    def search_items(self, business_id: str, name: str):
+        """Case-insensitive name search within a business's inventory."""
+        pattern = re.compile(re.escape(name), re.IGNORECASE)
+        items = self.collection.find({
+            "business_id": business_id,
+            "name": {"$regex": pattern}
+        })
+        return self._convert_many(list(items))
