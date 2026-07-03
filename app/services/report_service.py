@@ -11,8 +11,9 @@ class ReportService:
         self.sync_engine = sync_engine
 
     async def generate_daily_report(self, business_id: str):
-        today = datetime.utcnow()
-        start = datetime(today.year, today.month, today.day)
+        from datetime import timezone
+        today = datetime.now(timezone.utc)
+        start = datetime(today.year, today.month, today.day, tzinfo=timezone.utc)
         end = start + timedelta(days=1)
         bills = self.bill_repo.get_daily_sales(business_id, start, end)
         total_sales = sum(b["total"] for b in bills)
@@ -32,14 +33,20 @@ class ReportService:
         return report
 
     def get_sales_report(self, business_id: str, from_date: str, to_date: str, branch_id: str = None):
+        from datetime import timezone
         # We parse ISO dates if possible
         try:
             start = datetime.fromisoformat(from_date.replace('Z', '+00:00'))
             end = datetime.fromisoformat(to_date.replace('Z', '+00:00'))
         except ValueError:
             # Fallback if just YYYY-MM-DD
-            start = datetime.strptime(from_date, "%Y-%m-%d")
-            end = datetime.strptime(to_date, "%Y-%m-%d") + timedelta(days=1)
+            start = datetime.strptime(from_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            end = (datetime.strptime(to_date, "%Y-%m-%d") + timedelta(days=1)).replace(tzinfo=timezone.utc)
+            
+        if start.tzinfo is None:
+            start = start.replace(tzinfo=timezone.utc)
+        if end.tzinfo is None:
+            end = end.replace(tzinfo=timezone.utc)
 
         bills = self.bill_repo.get_daily_sales(business_id, start, end)
         if branch_id:
@@ -119,11 +126,12 @@ class ReportService:
         return res["employee_performance"]
 
     def get_gst_report(self, business_id: str, month: int, year: int):
-        start = datetime(year, month, 1)
+        from datetime import timezone
+        start = datetime(year, month, 1, tzinfo=timezone.utc)
         if month == 12:
-            end = datetime(year + 1, 1, 1)
+            end = datetime(year + 1, 1, 1, tzinfo=timezone.utc)
         else:
-            end = datetime(year, month + 1, 1)
+            end = datetime(year, month + 1, 1, tzinfo=timezone.utc)
             
         bills = self.bill_repo.get_daily_sales(business_id, start, end)
         gst_total = sum(b.get("gst_total", 0) for b in bills if b.get("status") == "final")
