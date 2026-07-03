@@ -38,6 +38,10 @@ class ReportService:
         try:
             start = datetime.fromisoformat(from_date.replace('Z', '+00:00'))
             end = datetime.fromisoformat(to_date.replace('Z', '+00:00'))
+            
+            # If the dates are just YYYY-MM-DD (length 10) or they were parsed with 0 time, add 1 day to end to include the full day
+            if len(to_date.split('T')[0]) == 10 and end.hour == 0 and end.minute == 0:
+                end = end + timedelta(days=1)
         except ValueError:
             # Fallback if just YYYY-MM-DD
             start = datetime.strptime(from_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
