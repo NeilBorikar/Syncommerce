@@ -60,9 +60,13 @@ class ReportService:
         total_orders = sum(1 for b in bills if b.get("status") == "final")
         gst_total = sum(b.get("gst_total", 0) for b in bills if b.get("status") == "final")
         
+        inventory = self.inventory_repo.get_by_business(business_id)
+        inventory_map = {i.get("name"): i.get("cost_price", 0) or 0 for i in inventory}
+
         # Calculate product aggregations
         product_map = {}
         employee_map = {}
+        total_profit = 0
 
         for b in bills:
             if b.get("status") != "final":
@@ -76,13 +80,27 @@ class ReportService:
 
             for item in b.get("items", []):
                 name = item.get("name")
-                if name not in product_map:
-                    product_map[name] = {"name": name, "quantity": 0, "revenue": 0}
-                product_map[name]["quantity"] += item.get("quantity", 0)
-                product_map[name]["revenue"] += item.get("quantity", 0) * item.get("price", 0)
+                qty = item.get("quantity", 0)
+                price = item.get("price", 0)
+                revenue = qty * price
+                
+                cost_price = item.get("cost_price")
+                if cost_price is None:
+                    cost_price = inventory_map.get(name, 0)
+                
+                cost = qty * cost_price
+                profit = revenue - cost
+                
+                total_profit += profit
 
-        # Sort top products
-        top_products = sorted(product_map.values(), key=lambda x: x["revenue"], reverse=True)[:10]
+                if name not in product_map:
+                    product_map[name] = {"name": name, "quantity": 0, "revenue": 0, "profit": 0}
+                product_map[name]["quantity"] += qty
+                product_map[name]["revenue"] += revenue
+                product_map[name]["profit"] += profit
+
+        # Sort top products by profit
+        top_products = sorted(product_map.values(), key=lambda x: x.get("profit", 0), reverse=True)[:10]
 
         # Process employee performance
         employee_performance = []
@@ -97,7 +115,7 @@ class ReportService:
         return {
             "total_sales": total_sales,
             "total_orders": total_orders,
-            "total_profit": 0, # Assuming 0 for now as requested
+            "total_profit": total_profit,
             "gst_total": gst_total,
             "top_products": top_products,
             "employee_performance": employee_performance,
