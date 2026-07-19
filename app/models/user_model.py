@@ -8,7 +8,7 @@ class User(BaseModelMixin):
         name: str,
         email: str,
         hashed_password: str,
-        role: str = "worker",
+        role: str = "patient", # default can be patient or worker
         business_id: str = None,
         is_active: bool = True,
         phone: str = "",
