@@ -9,7 +9,7 @@ from datetime import datetime
 class UserBase(BaseModel):
     name: str = Field(..., min_length=2, max_length=100)
     email: EmailStr
-    role: str = Field(default="patient", pattern="^(owner|manager|worker|patient|doctor|nurse|receptionist)$")
+    role: str = Field(default="worker", pattern="^(owner|manager|worker)$")
     phone: Optional[str] = Field(default=None)
     branch_id: Optional[str] = Field(default=None)
 
@@ -29,7 +29,7 @@ class UserCreate(UserBase):
 class UserUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=2, max_length=100)
     password: Optional[str] = Field(None, min_length=6)
-    role: Optional[str] = Field(None, pattern="^(owner|manager|worker|patient|doctor|nurse|receptionist)$")
+    role: Optional[str] = Field(None, pattern="^(owner|manager|worker)$")
     phone: Optional[str] = None
     salary: Optional[float] = Field(None, ge=0)
     status: Optional[str] = Field(None, pattern="^(active|suspended|inactive)$")
